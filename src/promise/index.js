@@ -1,6 +1,5 @@
 /**
- * 1. promise immediate execute after created
- * 2.
+ * promise
  *
  * @file promise
  * @author xwchris
