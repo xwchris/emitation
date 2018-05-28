@@ -1,3 +1,8 @@
+/**
+ * @file Asynchronous flow control (generator)
+ * @author xwchris
+ */
+
 /* eslint no-console: 0 */
 /* eslint-env commonjs, amd */
 
@@ -9,26 +14,26 @@
   } else {
     context[name] = definition();
   }
-})('Fo', this, function DEF() {
+})('asyncontrol', this, function () {
 
-  // 判断数组
+  // judge array
   var isArray = Array.isArray && function (o) {
     return typeof o === 'object' && Object.prototype.toString.call(o) === '[object Array]';
   };
 
-  // 构造Fo实例
-  var Fo = function (...initValue) {
+  // construct Asyncontrol
+  var Asyncontrol = function (...initValue) {
     this.delayTime = 0;
     this.controlTransfer = false;
 
     // 初始传入值
     this.initValue = initValue;
-    if (this instanceof Fo) return this;
-    return new Fo(...initValue);
+    if (this instanceof Asyncontrol) return this;
+    return new Asyncontrol(...initValue);
   };
 
-  // 执行单个generator
-  Fo.prototype.runSingle = function (it, value) {
+  // run single generator
+  Asyncontrol.prototype.runSingle = function (it, value) {
     var ret;
     var self = this;
 
@@ -76,8 +81,8 @@
     })(value);
   };
 
-  // 运行generator
-  Fo.prototype.run = function (...gs) {
+  // run generator
+  Asyncontrol.prototype.run = function (...gs) {
     var self = this;
     var initValue = this.initValue;
     var queue = this.controlQueue = isArray(gs) && gs.map(g => ({
@@ -106,20 +111,20 @@
     return this;
   };
 
-  // 转换控制权
-  Fo.prototype.transfer = function () {
+  // transfer controller
+  Asyncontrol.prototype.transfer = function () {
     this.controlTransfer = true;
     return this;
   };
 
   // 空等延迟
-  Fo.prototype.delay = function (delay) {
+  Asyncontrol.prototype.delay = function (delay) {
     this.delayTime = delay;
     return this;
   };
 
   // 防止修改
-  Fo = Object.freeze(Fo);
+  Asyncontrol = Object.freeze(Asyncontrol);
 
-  return Fo;
+  return Asyncontrol;
 });

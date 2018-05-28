@@ -8,13 +8,9 @@
   } else {
     context[name] = definition();
   }
-})('template', this, function () {
+})('template-engine', this, function () {
 
-  // define separators
-  var lSeparator = '<%';
-  var rSeparator = '%>';
-
-  var template = function (tpl, data) {
+  var templateEngine = function (tpl, data) {
     var reg = /<%(.+?)%>/g;
     var regExp = /(if|else|for|switch|case|break|{|})(.*)?/g;
     var code = 'var r = [];\n';

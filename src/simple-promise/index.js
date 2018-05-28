@@ -1,7 +1,7 @@
 /**
  * promise
  *
- * @file promise
+ * @file simple promise imitation
  * @author xwchris
  */
 
@@ -15,10 +15,10 @@
   } else {
     context[name] = definition;
   }
- })('Promise', this, function () {
+ })('simple-promise', this, function () {
 
   // promise constructor
-  var Promise = function (executionFunc) {
+  var SimplePromise = function (executionFunc) {
     this.promiseEvents = [];
 
     this.handleError = function() {};
@@ -31,21 +31,21 @@
   }
 
   // promise then
-  Promise.prototype.then = function (resolve, reject) {
+  SimplePromise.prototype.then = function (resolve, reject) {
     this.promiseEvents.push(resolve);
 
     return this;
   }
 
   // promise catch
-  Promise.prototype.catch = function (handleError) {
+  SimplePromise.prototype.catch = function (handleError) {
     this.handleError = handleError;
 
     return this;
   }
 
   // promise onResolve
-  Promise.prototype.onResolve = function (value) {
+  SimplePromise.prototype.onResolve = function (value) {
     var storeValue = value;
     try {
       this.promiseEvents.forEach(function (nextFunction) {
@@ -57,8 +57,8 @@
     }
   }
 
-  // promise oReject
-  Promise.prototype.onReject = function (error) {
+  // promise onReject
+  SimplePromise.prototype.onReject = function (error) {
     this.handleError(error);
   }
 
