@@ -8,7 +8,7 @@
   } else {
     context[name] = definition();
   }
-})('template-engine', this, function () {
+})('templateEngine', this, function () {
 
   var templateEngine = function (tpl, data) {
     var reg = /<%(.+?)%>/g;
@@ -30,5 +30,5 @@
     return new Function(code.replace(/\r\t\n/g, '')).apply(data);
   }
 
-  return template;
+  return templateEngine;
 });
