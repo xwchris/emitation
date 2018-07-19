@@ -13,7 +13,7 @@
   } else if (typeof module !== 'undefined' && module.exports) {
     module.exports = definition();
   } else {
-    context[name] = definition;
+    context[name] = definition();
   }
  })('simple-promise', this, function () {
 

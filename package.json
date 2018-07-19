@@ -1,0 +1,26 @@
+{
+  "name": "emitation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:xwchris/emitation.git",
+  "author": "zhangxiaowei <zhangxiaowei@innobuddy.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "babel": "babel src/index.js -o dist/bundle.js",
+    "babel-react": "babel src/fake-react/react.js -o dist/react.js;babel src/fake-react/react-dom.js -o dist/react-dom.js"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "jest": "^23.4.1"
+  },
+  "dependencies": {
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  }
+}
