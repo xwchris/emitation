@@ -9,11 +9,8 @@
     context[name] = definition();
   }
 })(window, 'ReactDOM', function() {
-  // TODO: react virtualDom
 
-  // default direction === true, eg: className = class
-  // TODO: finish transform
-  const transformCamelToCase = (name, direction = true) => {
+  const _transCamelToKebab = (name) => {
     const transformMap = {
       className: 'class',
       htmlFor: 'for'
@@ -22,87 +19,124 @@
     if (name in transformMap) {
       return transformMap[name];
     } else {
+
       // camelCase => kebabCase
       return name.replace(/[A-Z]/g, (letter) => (`-${letter.toLowerCase()}`));
     }
   }
 
-  // rend vnode
-  const renderNode = (vnode) => {
+  const _createComponent = (constructor, props) => {
+    let instance = null;
+
+    if (constructor.prototype && constructor.prototype.render) {
+      instance = new constructor(props);
+    } else {
+      instance = {};
+      instance.render = () => { return constructor(props) };
+    }
+
+    return instance;
+  }
+
+  const _setElementStyle = ($target, style) => {
+    let targetStyle = '';
+
+    // style为object或string
+    if (typeof style === 'object') {
+      targetStyle = Object.keys(style)
+        .reduce((result, styleName) => `${result}${_transCamelToKebab(styleName)}: ${style[styleName]}; `, '')
+    } else {
+      targetStyle = style;
+    }
+    $target.setAttribute('style', targetStyle);
+  }
+
+  const _bindElementEvent = ($target, eventName, event) => {
+    const name = _transCamelToKebab(eventName).split('-')[1];
+    $target.addEventListener(name, event);
+  }
+
+  const _setAttributes = ($target, props) => {
+    const attrs = Object.assign({}, props);
+
+    const attrMap = {
+      htmlFor: 'for',
+      className: 'class'
+    };
+
+    // 去除children, 避免它的影响
+    delete attrs.children;
+
+    Object.keys(attrs).forEach(key => {
+      const value = attrs[key];
+
+      if (key === 'style') {
+        _setElementStyle($target, value);
+      } else if (/^on.+/.test(key)) {
+        _bindElementEvent($target, key, value);
+      } else if (key in attrMap){
+        $target.setAttribute(attrMap[key], value);
+      } else {
+        $target.setAttribute(_transCamelToKebab(key), value);
+      }
+    });
+  }
+
+  const _renderComponent = (instance) => {
+    const node = instance.render();
+    const $node = _renderNode(node);
+    _setAttributes($node);
+
+    if (!instance.$base) {
+      instance.$base = $node;
+    }
+    return $node;
+  }
+
+  const _renderNode = vnode => {
     const { type, props } = vnode;
 
-    // !! componentWillMount componentWillReceiveProps componentWillUpdate
-
-    const Constructor = type;
-    // type if function
-    if (type && typeof type === 'function' && !Constructor.prototype.render) {
-      return renderNode(type());
+    // 如果是函数或类需要先构造对象
+    if (typeof type === 'function') {
+      const instance = _createComponent(type, props);
+      return _renderComponent(instance);
     }
 
-    if (type && typeof type === 'function' && Constructor.prototype.render) {
-      const instance = new type();
-      // !! render
-      return renderNode(instance.render());
-    }
+    const $parent = document.createElement(type);
+    const children = props.children;
 
-    // type is string
-    const $container = document.createElement(type);
+    // 赋值
+    _setAttributes($parent, props);
 
-    if (!props) {
-      return $container;
-    }
-
-    for (let propName in props) {
-      if (propName === 'children') {
-        const children = props.children;
-
-        if (!children) {
-          return $container;
-        }
-
-        if (typeof children === 'string' || typeof child === 'number') {
-          $container.textContent = children;
-        } else {
-          // recursive rend child
-          children.forEach(child => (
-            typeof child === 'string' || typeof child === 'number' ?
-              $container.appendChild(document.createTextNode(child)) :
-              $container.appendChild(renderNode(child))
-            )
-          )
-        }
-      } else if (propName === 'style') {
-        // style { color: 'red' } => 'color: red;'
-        let propValue = props[propName];
-
-        const resultValue = {};
-        Object.keys(propValue).map(key => {
-          resultValue[transformCamelToCase(key)] = propValue[key];
+    children.forEach(child => {
+      let $child = null;
+      if (typeof child === 'string' || typeof child === 'number' || typeof child === 'undefined' || typeof child === 'boolean') {
+        $child = document.createTextNode(child);
+      } else if (Array.isArray(child)) {
+        $child = document.createDocumentFragment();
+        child.forEach(node => {
+          $child.appendChild(_renderNode(node));
         });
-        propValue = Object.keys(resultValue)
-          .reduce((styleString, styleKey) => (`${styleString}${styleKey}: ${resultValue[styleKey]}; `),'');
-
-        $container.setAttribute(transformCamelToCase(propName), propValue);
-      } else if (/^on/.test(propName)) {
-
-        // event onClick => addEventListener('click', /* function */);
-        const eventName = transformCamelToCase(propName).split('-')[1];
-        $container.addEventListener(eventName, props[propName]);
       } else {
-        $container.setAttribute(transformCamelToCase(propName), props[propName]);
+        $child = _renderNode(child);
       }
-    }
+      $parent.appendChild($child);
+    });
 
-    // !! componentDidMount componentDidUpdate
-
-    return $container;
-  }
+    return $parent;
+  };
 
   const ReactDOM = {};
 
-  ReactDOM.render = function (vnode, target) {
-    target.appendChild(renderNode(vnode));
-    // !! componentDidMount componentDidUpdate
+  ReactDOM.renderComponent = (instance) => {
+    const $node = _renderComponent(instance);
+    const $base = instance.$base;
+    $base.parentNode.replaceChild($node, $base);
+    instance.$base = $node;
+  }
+
+  ReactDOM.render = (vnode, $target) => {
+    $target.appendChild(_renderNode(vnode));
   }
 
   return ReactDOM;

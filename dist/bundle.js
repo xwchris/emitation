@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -25,37 +25,29 @@ var App = function (_React$Component) {
   }
 
   _createClass(App, [{
-    key: 'increaseCount',
+    key: "increaseCount",
     value: function increaseCount() {
       this.setState({
         count: this.state.count + 1
       });
-      console.log('count', this.state.count);
     }
   }, {
-    key: 'render',
+    key: "render",
     value: function render() {
       return React.createElement(
-        'div',
-        {
-          className: 'container',
-          style: { backgroundColor: 'red', color: 'white' }
-        },
-        this.state.count ? React.createElement(
-          'div',
-          null,
-          React.createElement(
-            'h1',
-            { onClick: this.increaseCount },
-            'hello world'
-          ),
-          React.createElement(
-            'p',
-            null,
-            'count: ',
-            this.state.count
-          )
-        ) : null
+        "div",
+        { className: "container" },
+        React.createElement(
+          "h1",
+          { style: { backgroundColor: 'red' } },
+          "Count: ",
+          this.state.count
+        ),
+        React.createElement(
+          "button",
+          { onClick: this.increaseCount },
+          "click me + 1"
+        )
       );
     }
   }]);
@@ -63,4 +55,23 @@ var App = function (_React$Component) {
   return App;
 }(React.Component);
 
-ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+var Test = function Test(_ref) {
+  var children = _ref.children;
+  return React.createElement(
+    "div",
+    { className: "test-container" },
+    React.createElement(
+      "h2",
+      null,
+      "test"
+    ),
+    React.createElement(App, null),
+    React.createElement(
+      "h4",
+      null,
+      "test bottom"
+    )
+  );
+};
+
+ReactDOM.render(React.createElement(Test, null), document.getElementById('root'));

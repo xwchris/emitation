@@ -11,12 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     context[name] = definition();
   }
 })(window, 'React', function () {
-  // TODO: react setState
-  // TODO: react lifecycle
-
-  var React = {};
-
-  // constructor
+  // component
   var Component = function Component(props) {
     this.props = props;
   };
@@ -35,11 +30,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     } else {
       this.state = Object.assign({}, this.state, nextStates());
     }
+
+    ReactDOM.renderComponent(this);
   };
 
   Component.prototype.render = function () {};
-
-  React.Component = Component;
 
   // virtual dom
   var vNode = function vNode(type, props) {
@@ -50,6 +45,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       props: Object.assign({}, props, { children: children })
     };
   };
+
+  var React = {};
+
+  React.Component = Component;
 
   // React createElement function
   React.createElement = function (type, props) {

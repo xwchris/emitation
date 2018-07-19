@@ -8,7 +8,8 @@
   "scripts": {
     "test": "jest",
     "babel": "babel src/index.js -o dist/bundle.js",
-    "babel-react": "babel src/fake-react/react.js -o dist/react.js;babel src/fake-react/react-dom.js -o dist/react-dom.js"
+    "babel-react": "babel src/fake-react/react.js -o dist/react.js;babel src/fake-react/react-dom.js -o dist/react-dom.js",
+    "start": "yarn babel; yarn babel-react"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

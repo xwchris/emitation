@@ -7,19 +7,12 @@
     context[name] = definition();
   }
 })(window, 'React', function() {
-  // TODO: react setState
-  // TODO: react lifecycle
-
-  const React = {};
-
-  // constructor
+  // component
   const Component = function(props) {
     this.props = props;
   }
 
   Component.prototype.setState = function(nextStates) {
-
-
     if (!this.state) {
       throw Error('state is not defined');
     }
@@ -33,11 +26,12 @@
     } else {
       this.state = Object.assign({}, this.state, nextStates());
     }
+
+    ReactDOM.renderComponent(this);
   }
 
   Component.prototype.render = (() => {});
 
-  React.Component = Component;
 
   // virtual dom
   const vNode = (type, props, children = null) => {
@@ -46,6 +40,10 @@
       props: Object.assign({}, props, { children })
     }
   };
+
+  const React = {};
+
+  React.Component = Component;
 
   // React createElement function
   React.createElement = (type, props, ...children) => {
