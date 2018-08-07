@@ -13,6 +13,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     context[name] = definition();
   }
 })(window, 'ReactDOM', function () {
+  // TODO: 完善生命周期
 
   var _transCamelToKebab = function _transCamelToKebab(name) {
     var transformMap = {
@@ -28,6 +29,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       return name.replace(/[A-Z]/g, function (letter) {
         return '-' + letter.toLowerCase();
       });
+    }
+  };
+
+  var _attachNodeToTarget = function _attachNodeToTarget($node, $target) {
+    $target.appendChild($node);
+    if ($node._component && $node._component.componentDidMount) {
+      $node._component.componentDidMount();
     }
   };
 
@@ -91,13 +99,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     });
   };
 
-  var _renderComponent = function _renderComponent(instance) {
-    var node = instance.render();
-    var $node = _renderNode(node);
-    _setAttributes($node);
+  var _renderComponent = function _renderComponent(instance, props) {
+    if (instance.componentWillMount && !instance.$base) {
+      instance.componentWillMount();
+    } else if (instance.componentWillReceiveProps && instance.$base) {
+      instance.componentWillReceiveProps();
+    }
+
+    var vnode = instance.render();
+    var $node = _renderNode(vnode);
+    _setAttributes($node, props);
 
     if (!instance.$base) {
       instance.$base = $node;
+      $node._component = instance;
     }
     return $node;
   };
@@ -110,7 +125,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     if (typeof type === 'function') {
       var instance = _createComponent(type, props);
-      return _renderComponent(instance);
+      return _renderComponent(instance, props);
     }
 
     var $parent = document.createElement(type);
@@ -121,17 +136,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     children.forEach(function (child) {
       var $child = null;
-      if (typeof child === 'string' || typeof child === 'number' || typeof child === 'undefined' || typeof child === 'boolean') {
+      if ((typeof child === 'undefined' ? 'undefined' : _typeof(child)) !== 'object') {
         $child = document.createTextNode(child);
       } else if (Array.isArray(child)) {
         $child = document.createDocumentFragment();
         child.forEach(function (node) {
-          $child.appendChild(_renderNode(node));
+          var $node = _renderNode(node);
+          _attachNodeToTarget($node, $child);
         });
       } else {
         $child = _renderNode(child);
       }
-      $parent.appendChild($child);
+      _attachNodeToTarget($child, $parent);
     });
 
     return $parent;
@@ -140,14 +156,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   var ReactDOM = {};
 
   ReactDOM.renderComponent = function (instance) {
-    var $node = _renderComponent(instance);
+    if (instance.componentWillUpdate()) {
+      instance.componentDidUpdate();
+    }
+    var $node = _renderComponent(instance, instance.props);
     var $base = instance.$base;
     $base.parentNode.replaceChild($node, $base);
     instance.$base = $node;
+    $node._component = instance;
+
+    if (instance.componentDidUpdate) {
+      instance.componentDidUpdate();
+    }
   };
 
   ReactDOM.render = function (vnode, $target) {
-    $target.appendChild(_renderNode(vnode));
+    var $node = _renderNode(vnode);
+    _attachNodeToTarget($node, $target);
   };
 
   return ReactDOM;

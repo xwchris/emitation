@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "babel": "babel src/index.js -o dist/bundle.js",
-    "babel-react": "babel src/fake-react/react.js -o dist/react.js;babel src/fake-react/react-dom.js -o dist/react-dom.js",
+    "babel": "babel src/creact/index.js -o dist/bundle.js",
+    "babel-react": "babel src/creact/fiber.js -o dist/creact.js",
     "start": "yarn babel; yarn babel-react"
   },
   "devDependencies": {
